@@ -1,0 +1,18 @@
+/* src/index.css */
+
+/* Tailwind base styles (normalize + defaults) */
+@tailwind base;
+
+/* Tailwind component classes (buttons, forms, etc.) */
+@tailwind components;
+
+/* Tailwind utilities (spacing, colors, flex, grid, etc.) */
+@tailwind utilities;
+
+/* Optional: Custom global styles */
+body {
+    font-family: 'Inter', sans-serif;
+    /* you can pick any font */
+    background-color: #f9fafb;
+    /* light gray background */
+}
