@@ -1,29 +1,56 @@
 <script setup lang="ts">
-import { PieChart, Pie, Cell, Tooltip } from "recharts"
+import { computed } from 'vue'
+import { Doughnut } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
 
-defineProps<{ data: { name: string; value: number }[] }>()
+ChartJS.register(ArcElement, Tooltip, Legend)
 
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658"]
+const props = defineProps<{
+  percentages: Record<string, number>
+}>()
+
+const COLORS = [
+  '#6366f1', '#22c55e', '#f59e0b', '#ef4444',
+  '#3b82f6', '#a855f7', '#14b8a6', '#f97316',
+]
+
+const chartData = computed(() => {
+  const labels = Object.keys(props.percentages)
+  const values = Object.values(props.percentages)
+  return {
+    labels,
+    datasets: [
+      {
+        data: values,
+        backgroundColor: labels.map((_, i) => COLORS[i % COLORS.length]),
+        borderWidth: 1,
+      },
+    ],
+  }
+})
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: (ctx: { label: string; raw: unknown }) =>
+          `${ctx.label}: ${Number(ctx.raw).toFixed(1)}%`,
+      },
+    },
+  },
+}
 </script>
 
 <template>
-  <PieChart width="300" height="300">
-    <Pie
-      :data="data"
-      dataKey="value"
-      nameKey="name"
-      cx="50%"
-      cy="50%"
-      :outerRadius="100"
-      fill="#8884d8"
-      label
-    >
-      <Cell
-        v-for="(entry, index) in data"
-        :key="entry.name"
-        :fill="COLORS[index % COLORS.length]"
-      />
-    </Pie>
-    <Tooltip />
-  </PieChart>
+  <div class="w-36 h-36">
+    <Doughnut :data="chartData" :options="chartOptions" />
+  </div>
 </template>

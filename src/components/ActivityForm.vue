@@ -4,17 +4,19 @@
     <div>
       <label class="block mb-1 text-gray-700">Language</label>
       <input v-model="language" type="text" placeholder="e.g. Spanish"
-             class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300" />
+             class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300" required />
     </div>
 
     <!-- Activity -->
     <div>
       <label class="block mb-1 text-gray-700">Activity</label>
-      <select v-model="activity" class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300">
+      <select v-model="activityType" class="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300">
         <option disabled value="">Select activity</option>
         <option>Watching</option>
         <option>Listening</option>
         <option>Talking</option>
+        <option>Reading</option>
+        <option>Speaking</option>
       </select>
     </div>
 
@@ -27,13 +29,22 @@
     <!-- Minutes -->
     <div>
       <label class="block mb-1 text-gray-700">Minutes</label>
-      <input v-model.number="minutes" type="number" min="0" max="59" class="w-full border rounded-lg p-2" />
+      <input v-model.number="mins" type="number" min="0" max="59" class="w-full border rounded-lg p-2" />
     </div>
+
+    <!-- Error -->
+    <p v-if="store.submitError" class="text-sm text-red-600">{{ store.submitError }}</p>
+    <!-- Success -->
+    <p v-if="successMsg" class="text-sm text-green-600">{{ successMsg }}</p>
 
     <!-- Submit -->
     <div class="flex justify-end">
-      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-        Add Log
+      <button
+        type="submit"
+        :disabled="store.submitLoading"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+      >
+        {{ store.submitLoading ? 'Saving…' : 'Add Log' }}
       </button>
     </div>
   </form>
@@ -41,28 +52,36 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useActivityStore } from '../store'
+import { useActivityStore } from '@/store'
 
 const store = useActivityStore()
 
 const language = ref('')
-const activity = ref('')
+const activityType = ref('')
 const hours = ref(0)
-const minutes = ref(0)
+const mins = ref(0)
+const successMsg = ref('')
 
-function submitForm() {
-  // Add log to store
-  store.logs.push({
-    language: language.value,
-    activity: activity.value,
-    minutes: hours.value * 60 + minutes.value,
-    date: new Date().toISOString().split('T')[0],
-  })
+async function submitForm() {
+  const totalMinutes = hours.value * 60 + mins.value
+  if (totalMinutes <= 0) return
 
-  // Reset form
-  language.value = ''
-  activity.value = ''
-  hours.value = 0
-  minutes.value = 0
+  successMsg.value = ''
+  try {
+    await store.submitLog({
+      language: language.value,
+      activityType: activityType.value,
+      minutes: totalMinutes,
+      date: new Date().toISOString().split('T')[0],
+    })
+    successMsg.value = 'Log saved!'
+    language.value = ''
+    activityType.value = ''
+    hours.value = 0
+    mins.value = 0
+    setTimeout(() => { successMsg.value = '' }, 3000)
+  } catch {
+    // error already set in store.submitError
+  }
 }
 </script>
