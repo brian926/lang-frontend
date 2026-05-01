@@ -103,3 +103,9 @@ Integrated via `@tailwindcss/vite` plugin — there is no `tailwind.config.js` o
 ## No CI or pre-commit hooks
 
 No `.github/` workflows, no Husky, no lint-staged. Nothing runs automatically on commit or push.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan:
+specs/001-lang-tracker-frontend/plan.md
+<!-- SPECKIT END -->

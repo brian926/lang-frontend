@@ -1,10 +1,13 @@
 <template>
-  <div class="flex h-screen">
+  <div
+    class="flex min-h-screen"
+    style="background-color: var(--color-bg); color: var(--color-text);"
+  >
     <!-- Sidebar -->
     <Sidebar />
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col min-w-0 pb-16 md:pb-0">
       <Navbar />
       <router-view />
     </div>

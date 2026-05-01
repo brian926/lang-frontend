@@ -62,3 +62,8 @@ pnpm-lock.yaml
 
 # Vite cache
 .vite/
+
+# AI tools and local spec/planning artifacts (local only)
+specs/
+.specify/
+.opencode/
